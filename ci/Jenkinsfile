@@ -80,6 +80,7 @@ node {
     }
     stage('Install packages') {
       sh("docker run --rm -v `pwd`:/app -w /app node yarn install")
+      sh("echo ${env.BRANCH_NAME}")
       sh("sudo chown -R jenkins: ./node_modules")
     }
 
