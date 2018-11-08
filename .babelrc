@@ -1,0 +1,38 @@
+{
+    "presets": [
+      [
+        "react"
+      ],
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "last 2 versions",
+              "safari >= 7"
+            ]
+          }
+        }
+      ]
+    ],
+    "plugins": [
+      [
+        "transform-runtime",
+        {
+          "helpers": false,
+          "polyfill": false,
+          "regenerator": true,
+          "moduleName": "babel-runtime"
+        }
+      ],
+      [
+        "transform-object-rest-spread"
+      ],
+      [
+        "transform-class-properties"
+      ],
+      [
+        "syntax-dynamic-import"
+      ]
+    ]
+  }
