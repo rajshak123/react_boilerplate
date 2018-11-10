@@ -102,7 +102,6 @@ node {
     }
 
     stage('Build static assets') {
-      sh("ls")
       sh("docker run --rm -v `pwd`:/app -w /app node yarn build")
     }
 
