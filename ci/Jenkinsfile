@@ -1,44 +1,44 @@
-// def slackChannelName = '#api-ops'
+def slackChannelName = '#api-ops'
 
 def notifyBuild(String channelName, String buildStatus = 'STARTED') {
   // build status of null means successful
-  // buildStatus =  buildStatus ?: 'SUCCESSFUL'
+  buildStatus =  buildStatus ?: 'SUCCESSFUL'
 
-  // // Default values
-  // def subject_full = "${buildStatus}: Job <${env.BUILD_URL}/console|${env.JOB_NAME} [${env.BUILD_NUMBER}]>"
-  // def colorName = 'good'
-  // project_key = 'com.trustingsocial.digitaljourney.dj-web-handler-frontend'
+  // Default values
+  def subject_full = "${buildStatus}: Job <${env.BUILD_URL}/console|${env.JOB_NAME} [${env.BUILD_NUMBER}]>"
+  def colorName = 'good'
+  project_key = 'com.trustingsocial.digitaljourney.dj-web-handler-frontend'
 
-  // // Override default values based on build status
-  // switch (buildStatus) {
-  //   case ["STARTED"]:
-  //     summary = subject_full.replaceAll("/console", "")
-  //     break
-  //   case ["SUCCESSFUL"]:
-  //     summary = subject_full.replaceAll("/console", "")
-  //     coverage_rate = sh(script: "curl -s -u $sonarToken: '$sonarHost/api/badges/measure?key=${project_key}&metric=coverage' | sed -e 's/<[^>]*>//g;s/%/ /g' | cut -d ' ' -f2", returnStdout: true).trim()
-  //     summary = subject_full.replaceAll("/console", "") + "\n *DIGITAL-JOURNEY* - *PASSED* - _Code coverage *<${sonarHost}/dashboard?id=${project_key}|${coverage_rate}>*_ :tada:"
-  //     break
-  //   default:
-  //     colorName = 'danger'
-  //     summary = subject_full
-  // }
+  // Override default values based on build status
+  switch (buildStatus) {
+    case ["STARTED"]:
+      summary = subject_full.replaceAll("/console", "")
+      break
+    case ["SUCCESSFUL"]:
+      summary = subject_full.replaceAll("/console", "")
+      coverage_rate = sh(script: "curl -s -u $sonarToken: '$sonarHost/api/badges/measure?key=${project_key}&metric=coverage' | sed -e 's/<[^>]*>//g;s/%/ /g' | cut -d ' ' -f2", returnStdout: true).trim()
+      summary = subject_full.replaceAll("/console", "") + "\n *DIGITAL-JOURNEY* - *PASSED* - _Code coverage *<${sonarHost}/dashboard?id=${project_key}|${coverage_rate}>*_ :tada:"
+      break
+    default:
+      colorName = 'danger'
+      summary = subject_full
+  }
 
-  // // Send notifications
-  // slackSend (channel: channelName, failOnError: true, color: colorName, message: summary)
+  // Send notifications
+  slackSend (channel: channelName, failOnError: true, color: colorName, message: summary)
 }
 
 def checkServer(String deployServer, String appPort, String credentials) {
-  // timeout(time: 30, unit: 'SECONDS') {
-  //   waitUntil {
-  //     def r = sshagent (credentials: [credentials]) {
-  //               sh script: "ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 curl -s -o /dev/null -w '%{http_code}' 'http://${deployServer}:${appPort}' | grep 200", returnStatus: true      
-  //             }
-  //     echo "Result $r"
-  //     sleep 10
-  //     return (r == 0);
-  //   }
-  // }
+  timeout(time: 30, unit: 'SECONDS') {
+    waitUntil {
+      def r = sshagent (credentials: [credentials]) {
+                sh script: "ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 curl -s -o /dev/null -w '%{http_code}' 'http://${deployServer}:${appPort}' | grep 200", returnStatus: true      
+              }
+      echo "Result $r"
+      sleep 10
+      return (r == 0);
+    }
+  }
 }
 
 
@@ -46,29 +46,29 @@ def checkServer(String deployServer, String appPort, String credentials) {
 properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '10', daysToKeepStr: '7', numToKeepStr: '10']]]);
 
 def buildImage(String imageTag, String dockerImage, String environment) {
-  // return stage("Build docker image and push to registry for ${environment}") {
-  //         docker.withRegistry('https://docker-registry.trustingsocial.com', "5f667fde-2dee-4686-97ba-f4c77ae47435") {
-  //           def customImage = docker.build("${imageTag}", "-f ./ci/Dockerfile .")
-  //           try {
-  //             /* Push the container to the custom Registry */
-  //             customImage.push()
-  //           } catch (err) {
-  //             throw err
-  //           } finally {
-  //               sh "docker rmi -f ${imageTag} ${dockerImage}"
-  //           }
-  //         }
-  //     }
+  return stage("Build docker image and push to registry for ${environment}") {
+          docker.withRegistry('https://docker-registry.trustingsocial.com', "5f667fde-2dee-4686-97ba-f4c77ae47435") {
+            def customImage = docker.build("${imageTag}", "-f ./ci/Dockerfile .")
+            try {
+              /* Push the container to the custom Registry */
+              customImage.push()
+            } catch (err) {
+              throw err
+            } finally {
+                sh "docker rmi -f ${imageTag} ${dockerImage}"
+            }
+          }
+      }
 }
 
 node {
-  // def project = 'digital_journey'
-  // def appName = 'dj-web-handler-frontend'
-  // def appPort = '8010'
-  // def conPort = '3000'
-  // def privateRegistry = 'docker-registry.trustingsocial.com'
-  // def imageTag = "${project}/${appName}:${env.BRANCH_NAME}.${env.BUILD_TIMESTAMP}"
-  // def dockerImage = "${privateRegistry}/${imageTag}"
+  def project = 'digital_journey'
+  def appName = 'dj-web-handler-frontend'
+  def appPort = '8010'
+  def conPort = '3000'
+  def privateRegistry = 'docker-registry.trustingsocial.com'
+  def imageTag = "${project}/${appName}:${env.BRANCH_NAME}.${env.BUILD_TIMESTAMP}"
+  def dockerImage = "${privateRegistry}/${imageTag}"
   try {
     sh("echo env.BRANCH_NAME")
     sh("echo ${env.BRANCH_NAME}")
@@ -76,27 +76,25 @@ node {
         checkout scm
     }
     if (env.BRANCH_NAME.matches("master|release-.*")) {
-      // notifyBuild(slackChannelName, 'STARTED')
+      notifyBuild(slackChannelName, 'STARTED')
     }
     stage('Install packages') {
       sh("docker run --rm -v `pwd`:/app -w /app node yarn install")
-      sh("echo ${env.BRANCH_NAME}")
-      // sh("sudo chown -R jenkins: ./node_modules")
+      sh("sudo chown -R jenkins: ./node_modules")
     }
 
     stage('Set the enviroment variables') {
-      // def deployServer = "103.89.1.215"
-      // def credentials = "dj-frontend-deploy"
+      def deployServer = "103.89.1.215"
+      def credentials = "dj-frontend-deploy"
 
       try {
-        sh("echo set_the_env_variable")
-      //   def VAULT_TOKEN = "1bcdf231-e30d-8f29-e4c6-e632b27b8933"
-      //   sshagent (credentials: [credentials]) {
-      //    sh "curl -H 'Content-Type: application/json' -H 'X-Vault-Token: ${VAULT_TOKEN}' https://vault-api.trustingsocial.com/v1/digital_journey/${appName}/testing  | jq -r '.data | to_entries | .[] | .key + \"=\" + .value' | sudo tee `pwd`/env/properties.env > /dev/null"
-      //   }
+        def VAULT_TOKEN = "1bcdf231-e30d-8f29-e4c6-e632b27b8933"
+        sshagent (credentials: [credentials]) {
+         sh "curl -H 'Content-Type: application/json' -H 'X-Vault-Token: ${VAULT_TOKEN}' https://vault-api.trustingsocial.com/v1/digital_journey/${appName}/testing  | jq -r '.data | to_entries | .[] | .key + \"=\" + .value' | sudo tee `pwd`/env/properties.env > /dev/null"
+        }
       }
       catch (err) {
-      //   throw err
+        throw err
       } finally {
       }
     }
@@ -121,25 +119,24 @@ node {
 
     stage "SonarQube analysis"
     try {
-      sh("echo SonarCubeAnalysis")
-      // switch (env.BRANCH_NAME) {
-      //   case ~/^(release-.*)|master/:
-      //     sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test:coverage --silent", returnStatus: true)
-      //     def scannerHome = tool 'SonarQube Scanner';
-      //     withSonarQubeEnv {
-      //       sh(script:"docker run --rm -v `pwd`:/app docker-registry.trustingsocial.com/devops/sonar-scanner -Dsonar.login='${SONAR_AUTH_TOKEN}' -Dsonar.host.url='${SONAR_HOST_URL}'", returnStatus: true)
-      //       sonarToken = "${SONAR_AUTH_TOKEN}"
-      //       sonarHost = "${SONAR_HOST_URL}"
-      //     }
-      //     break
-      //   default:
-      //     echo "no environment defined"
-      // }
+      switch (env.BRANCH_NAME) {
+        case ~/^(release-.*)|master/:
+          sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test:coverage --silent", returnStatus: true)
+          def scannerHome = tool 'SonarQube Scanner';
+          withSonarQubeEnv {
+            sh(script:"docker run --rm -v `pwd`:/app docker-registry.trustingsocial.com/devops/sonar-scanner -Dsonar.login='${SONAR_AUTH_TOKEN}' -Dsonar.host.url='${SONAR_HOST_URL}'", returnStatus: true)
+            sonarToken = "${SONAR_AUTH_TOKEN}"
+            sonarHost = "${SONAR_HOST_URL}"
+          }
+          break
+        default:
+          echo "no environment defined"
+      }
     } catch (e) {
-      // currentBuild.result = "FAILED"
+      currentBuild.result = "FAILED"
       throw e
     } finally {
-      // sh("rm -rf ./test-report.xml")
+      sh("rm -rf ./test-report.xml")
     }
 
     switch (env.BRANCH_NAME) {
@@ -178,49 +175,49 @@ node {
   } finally {
     // Success or failure, always send notifications
     if (env.BRANCH_NAME.matches("master|release-.*")) {
-      // notifyBuild(slackChannelName, currentBuild.result)
+      notifyBuild(slackChannelName, currentBuild.result)
     }
   }
 
-  // try {  
-  //   switch (env.BRANCH_NAME) {
-  //     case ~/^master/:
-  //       stage('Deploy to Testing Server') {
-  //       def VAULT_TOKEN = "1bcdf231-e30d-8f29-e4c6-e632b27b8933"
-  //       def credentials = "dj-service-deploy"
-  //       def deployServer = "172.19.0.16"
-  //       try {
-  //         sshagent (credentials: [credentials]) {
-  //           sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh -tt root@${deployServer} 'sudo mkdir -p /etc/api/config/${appName}/'")
-  //           sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh -tt root@${deployServer} 'sh build/vault_init.sh ${VAULT_TOKEN} ${appName}'")
-  //           sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh -tt root@${deployServer} 'sh build/docker.sh  ${dockerImage} ${appName} ${appPort} ${conPort}'")
-  //         }
-  //         checkServer(deployServer, appPort,credentials)
-  //         def summary = "DEPLOYED TO ${deployServer}:${appPort} Job <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>"
-  //         slackSend (channel: slackChannelName, failOnError: true, color: 'good', message: summary)
-  //         } catch (err) {
-  //           throw err
-  //         } finally {
-  //           sshagent (credentials: [credentials]) {
-  //             sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh root@${deployServer} -tt 'docker logs ${appName};'")
-  //           }
-  //         }
-  //       }
-  //       break
-  //     case ~/^(release-.*)/:
-  //       stage('Deploy and activate application to staging environment') {
-  //         //TODO (D.Vu): Write script to deploy to staging
-  //       }
-  //       break
-  //     case 'release':
-  //       stage('Deploy and activate application to production environment') {
-  //         //TODO (D.Vu): Write script to deploy to production
-  //       }
-  //       break
-  //   }
-  // } catch (err) {
-  //   throw err
-  //   def summary = "DEPLOY FAILED: Job <${env.BUILD_URL}/console|${env.JOB_NAME} [${env.BUILD_NUMBER}]>"
-  //   slackSend (channel: slackChannelName, failOnError: true, color: 'danger', message: summary)
-  // }
+  try {  
+    switch (env.BRANCH_NAME) {
+      case ~/^master/:
+        stage('Deploy to Testing Server') {
+        def VAULT_TOKEN = "1bcdf231-e30d-8f29-e4c6-e632b27b8933"
+        def credentials = "dj-service-deploy"
+        def deployServer = "172.19.0.16"
+        try {
+          sshagent (credentials: [credentials]) {
+            sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh -tt root@${deployServer} 'sudo mkdir -p /etc/api/config/${appName}/'")
+            sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh -tt root@${deployServer} 'sh build/vault_init.sh ${VAULT_TOKEN} ${appName}'")
+            sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh -tt root@${deployServer} 'sh build/docker.sh  ${dockerImage} ${appName} ${appPort} ${conPort}'")
+          }
+          checkServer(deployServer, appPort,credentials)
+          def summary = "DEPLOYED TO ${deployServer}:${appPort} Job <${env.BUILD_URL}|${env.JOB_NAME} [${env.BUILD_NUMBER}]>"
+          slackSend (channel: slackChannelName, failOnError: true, color: 'good', message: summary)
+          } catch (err) {
+            throw err
+          } finally {
+            sshagent (credentials: [credentials]) {
+              sh ("ssh -oStrictHostKeyChecking=no -tt hopper@149.129.223.166 ssh root@${deployServer} -tt 'docker logs ${appName};'")
+            }
+          }
+        }
+        break
+      case ~/^(release-.*)/:
+        stage('Deploy and activate application to staging environment') {
+          //TODO (D.Vu): Write script to deploy to staging
+        }
+        break
+      case 'release':
+        stage('Deploy and activate application to production environment') {
+          //TODO (D.Vu): Write script to deploy to production
+        }
+        break
+    }
+  } catch (err) {
+    throw err
+    def summary = "DEPLOY FAILED: Job <${env.BUILD_URL}/console|${env.JOB_NAME} [${env.BUILD_NUMBER}]>"
+    slackSend (channel: slackChannelName, failOnError: true, color: 'danger', message: summary)
+  }
 }
