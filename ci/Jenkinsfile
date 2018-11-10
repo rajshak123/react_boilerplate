@@ -117,27 +117,27 @@ node {
       )
     }
 
-    stage "SonarQube analysis"
-    try {
-      switch (env.BRANCH_NAME) {
-        case ~/^(release-.*)|master/:
-          sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test:coverage --silent", returnStatus: true)
-          def scannerHome = tool 'SonarQube Scanner';
-          withSonarQubeEnv {
-            sh(script:"docker run --rm -v `pwd`:/app docker-registry.trustingsocial.com/devops/sonar-scanner -Dsonar.login='${SONAR_AUTH_TOKEN}' -Dsonar.host.url='${SONAR_HOST_URL}'", returnStatus: true)
-            sonarToken = "${SONAR_AUTH_TOKEN}"
-            sonarHost = "${SONAR_HOST_URL}"
-          }
-          break
-        default:
-          echo "no environment defined"
-      }
-    } catch (e) {
-      currentBuild.result = "FAILED"
-      throw e
-    } finally {
-      sh("rm -rf ./test-report.xml")
-    }
+    // stage "SonarQube analysis"
+    // try {
+    //   switch (env.BRANCH_NAME) {
+    //     case ~/^(release-.*)|master/:
+    //       sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test:coverage --silent", returnStatus: true)
+    //       def scannerHome = tool 'SonarQube Scanner';
+    //       withSonarQubeEnv {
+    //         sh(script:"docker run --rm -v `pwd`:/app docker-registry.trustingsocial.com/devops/sonar-scanner -Dsonar.login='${SONAR_AUTH_TOKEN}' -Dsonar.host.url='${SONAR_HOST_URL}'", returnStatus: true)
+    //         sonarToken = "${SONAR_AUTH_TOKEN}"
+    //         sonarHost = "${SONAR_HOST_URL}"
+    //       }
+    //       break
+    //     default:
+    //       echo "no environment defined"
+    //   }
+    // } catch (e) {
+    //   currentBuild.result = "FAILED"
+    //   throw e
+    // } finally {
+    //   sh("rm -rf ./test-report.xml")
+    // }
 
     switch (env.BRANCH_NAME) {
       case ~/^master/:
