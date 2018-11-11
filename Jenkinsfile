@@ -93,6 +93,7 @@ node {
       // try {
       //   def VAULT_TOKEN = "1bcdf231-e30d-8f29-e4c6-e632b27b8933"
       //   sshagent (credentials: [credentials]) {
+      //    jq is used the format the output and apply styling and -r helps in parsing it as an array
       //    sh "curl -H 'Content-Type: application/json' -H 'X-Vault-Token: ${VAULT_TOKEN}' https://vault-api.trustingsocial.com/v1/digital_journey/${appName}/testing  | jq -r '.data | to_entries | .[] | .key + \"=\" + .value' | sudo tee `pwd`/env/properties.env > /dev/null"
       //   }
       // }
@@ -103,7 +104,7 @@ node {
     }
 
     stage('Build static assets') {
-      sh("docker run --rm -v `pwd`:/app -w /app ls")
+      // sh("docker run --rm -v `pwd`:/app -w /app ls")
       sh("docker run --rm -v `pwd`:/app -w /app node yarn build")
     }
 

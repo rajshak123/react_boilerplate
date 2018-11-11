@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="/home/rs/Desktop/code_base/react_devOps_boilerplate/biolerplate/src/App.test.js">
-    <testCase name="renders without crashing" duration="43"/>
+    <testCase name="renders without crashing" duration="33"/>
   </file>
 </testExecutions>
