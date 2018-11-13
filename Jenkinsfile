@@ -112,7 +112,8 @@ node {
       //                   sh 'ls -lrt'
       //                   sh 'node yarn build'
       //               }
-      sh(script:"docker run -v `pwd`:/app -w /app  node yarn build")
+      // sh(script:"docker run -v `pwd`:/app -w /app  node yarn build")
+      sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test --silent", returnStatus: true)
     }
 
     stage('Run tests') {
