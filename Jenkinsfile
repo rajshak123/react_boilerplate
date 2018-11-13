@@ -105,12 +105,12 @@ node {
 
     stage('Build static assets') {
       // sh("docker run --rm -v `pwd`:/app -w /app ls")
-      def image = docker.image('mhart/alpine-node:8.11.3')
+      def image = docker.image('node:11-alpine')
                     image.pull()
                     image.inside() {
                         sh 'id'
                         sh 'ls -lrt'
-                        sh 'npm run install'
+                        sh 'npm install'
                         sh 'npm run build'
                     }
       // sh(script:"docker run -v `pwd`:/app -w /app  node yarn build")
