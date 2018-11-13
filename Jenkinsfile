@@ -1,4 +1,4 @@
-def slackChannelName = '#api-ops'
+// def slackChannelName = '#api-ops'
 
 def notifyBuild(String channelName, String buildStatus = 'STARTED') {
   // build status of null means successful
@@ -112,7 +112,7 @@ node {
       //                   sh 'ls -lrt'
       //                   sh 'node yarn build'
       //               }
-      sh("docker run -v `pwd`:/app -w /app  node yarn build")
+      sh(script:"docker run -v `pwd`:/app -w /app  node yarn build")
     }
 
     stage('Run tests') {
