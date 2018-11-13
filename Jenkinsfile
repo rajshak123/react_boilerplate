@@ -105,7 +105,7 @@ node {
 
     stage('Build static assets') {
       // sh("docker run --rm -v `pwd`:/app -w /app ls")
-      sh("docker run --rm -v `pwd`:/app -w /app node yarn build")
+      sh("docker run -v `pwd`:/app -w /app node yarn build")
     }
 
     stage('Run tests') {
