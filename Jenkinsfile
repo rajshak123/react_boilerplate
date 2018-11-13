@@ -112,7 +112,7 @@ node {
       //                   sh 'ls -lrt'
       //                   sh 'node yarn build'
       //               }
-      sh("sudo docker run -v `pwd`:/app -w /app  node yarn build")
+      sh("docker run -v `pwd`:/app -w /app  node yarn build")
     }
 
     stage('Run tests') {
