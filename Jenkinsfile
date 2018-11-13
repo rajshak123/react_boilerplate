@@ -110,8 +110,8 @@ node {
                     image.inside() {
                         sh 'id'
                         sh 'ls -lrt'
-                        sh 'npm install'
-                        sh 'npm run build'
+                        sh 'yarn install'
+                        sh 'yarn build'
                     }
       // sh(script:"docker run -v `pwd`:/app -w /app  node yarn build")
       // sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test --silent", returnStatus: true)
