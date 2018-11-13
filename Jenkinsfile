@@ -105,15 +105,15 @@ node {
 
     stage('Build static assets') {
       // sh("docker run --rm -v `pwd`:/app -w /app ls")
-      // def image = docker.image('mhart/alpine-node:8.11.3')
-      //               image.pull()
-      //               image.inside() {
-      //                   sh 'id'
-      //                   sh 'ls -lrt'
-      //                   sh 'node yarn build'
-      //               }
+      def image = docker.image('mhart/alpine-node:8.11.3')
+                    image.pull()
+                    image.inside() {
+                        sh 'id'
+                        sh 'ls -lrt'
+                        sh 'npm run build'
+                    }
       // sh(script:"docker run -v `pwd`:/app -w /app  node yarn build")
-      sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test --silent", returnStatus: true)
+      // sh(script:"docker run --rm --env-file `pwd`/env/properties.env -v `pwd`:/app -w /app node yarn test --silent", returnStatus: true)
     }
 
     stage('Run tests') {
