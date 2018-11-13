@@ -81,7 +81,7 @@ node {
     }
     stage('Install packages') {
       sh("docker run --rm -v `pwd`:/app -w /app node yarn install")
-      sh("sudo chown -R jenkins: ./node_modules")
+      // sh("sudo chown -R jenkins: ./node_modules")
     }
 
     stage('Set the enviroment variables') {
