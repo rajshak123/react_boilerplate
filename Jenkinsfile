@@ -80,7 +80,7 @@ node {
       // notifyBuild(slackChannelName, 'STARTED')
     }
     stage('Install packages') {
-      sh("docker run --rm -v `pwd`:/app -w /app node yarn install")
+      sh("docker run --rm -v `pwd`:/app -w /app sudo node yarn install")
       // sh("sudo chown -R jenkins: ./node_modules")
     }
 
@@ -105,7 +105,7 @@ node {
 
     stage('Build static assets') {
       // sh("docker run --rm -v `pwd`:/app -w /app ls")
-      sh("docker run -v `pwd`:/app -w /app node yarn build")
+      sh("docker run -v `pwd`:/app -w /app sudo node yarn build")
     }
 
     stage('Run tests') {
